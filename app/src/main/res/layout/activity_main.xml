@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:contentDescription="@string/fab_start_calculation_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_add_24" />
@@ -25,7 +26,8 @@
         android:layout_marginEnd="8dp"
         android:background="@drawable/colored_rect_with_rounded_corners"
         android:elevation="4dp"
-        android:hint="Insert number here"
+        android:hint="@string/edit_text_number_input"
+        android:inputType="number"
         android:maxLines="1"
         android:paddingStart="16dp"
         android:paddingTop="8dp"

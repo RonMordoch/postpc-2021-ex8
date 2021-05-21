@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FindRootsWorkManager</string>
+    <string name="edit_text_number_input">Insert number here</string>
+    <string name="fab_start_calculation_description">start root calculation</string>
 </resources>
