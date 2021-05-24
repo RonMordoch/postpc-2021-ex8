@@ -1,13 +1,25 @@
 package exercises.android.ronm.findrootsworkmanager.models
 
-data class Calculation(
-        val number: Int,
-        ) {
+import java.util.UUID
 
-    var isCalculating : Boolean = false
-    var root1 : Int = 1
-    var root2 : Int = 1
-    var currentProgress : Int = 0
+data class Calculation(val id: UUID, val number: Long): Comparable<Calculation> {
 
+    var root1: Long = number
+    var root2: Long = 1
+    var isCalculating: Boolean = true
+
+
+    override fun compareTo(other: Calculation): Int {
+        // this object is in-progress, other is done, this object is less than other
+        if (isCalculating && !other.isCalculating){
+            return -1
+        }
+        // this object is done, other is in-progress, other is less than this object
+        else if (!isCalculating && other.isCalculating){
+            return 1
+        }
+        // else, objects are both in-progress or both are done, sort by number from smallest to largest
+        return number.compareTo(other.number)
+    }
 
 }
