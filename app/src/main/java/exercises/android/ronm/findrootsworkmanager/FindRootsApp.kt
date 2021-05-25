@@ -6,13 +6,16 @@ import android.content.SharedPreferences
 import exercises.android.ronm.findrootsworkmanager.models.Calculation
 import exercises.android.ronm.findrootsworkmanager.models.CalculationsHolder
 
-class FindRootsApp: Application() {
+const val SP_NAME_WORKERS = "workers_sp"
+
+class FindRootsApp : Application() {
 
     lateinit var sp: SharedPreferences
     var calculationsHolder: CalculationsHolder = CalculationsHolder()
 
     override fun onCreate() {
         super.onCreate()
-        sp = getSharedPreferences("worker_sp", Context.MODE_PRIVATE)
+        sp = getSharedPreferences(SP_NAME_WORKERS, Context.MODE_PRIVATE)
+        sp.edit().clear().apply() // TODO for DEBUG
     }
 }

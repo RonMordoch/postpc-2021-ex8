@@ -8,7 +8,7 @@ class CalculationsHolder {
 
     // return a copy of the list
     fun getCalculations(): MutableList<Calculation> {
-        val copy =  mutableListOf<Calculation>()
+        val copy = mutableListOf<Calculation>()
         copy.addAll(calculationsList)
         return copy
     }
@@ -41,9 +41,20 @@ class CalculationsHolder {
             }
         }
         sortCalculations()
+
+    }
+
+    fun updateCalculationProgress(id: UUID, progress: Int) {
+        calculationsList.forEach { calculation ->
+            if (calculation.id == id) {
+                calculation.progress = progress
+                return@forEach
+            }
+        }
     }
 
     private fun sortCalculations() {
         calculationsList.sort()
     }
+
 }

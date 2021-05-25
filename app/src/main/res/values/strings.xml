@@ -2,4 +2,9 @@
     <string name="app_name">FindRootsWorkManager</string>
     <string name="edit_text_number_input">Insert number here</string>
     <string name="fab_start_calculation_description">start root calculation</string>
+    <string name="calculating_roots_for">Calculating roots for %1$d</string>
+    <string name="cancel_or_delete_button_description">cancel or delete button</string>
+    <string name="roots_results">Roots for %1$d:  %2$dx%3$d </string>
+    <string name="toast_enter_valid_input_number">"Please enter a positive integer"</string>
+    <string name="number_is_prime">"Roots for %1$d:  Number is prime!"</string>
 </resources>

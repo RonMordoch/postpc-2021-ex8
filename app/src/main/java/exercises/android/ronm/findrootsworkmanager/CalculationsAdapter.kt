@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import exercises.android.ronm.findrootsworkmanager.models.CalculationsHolder
 import java.util.UUID
 
-class CalculationsAdapter(var calculationsHolder: CalculationsHolder) :
+class CalculationsAdapter(private val calculationsHolder: CalculationsHolder) :
     RecyclerView.Adapter<CalculationsAdapter.CalculationViewHolder>() {
 
     class CalculationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -19,7 +19,7 @@ class CalculationsAdapter(var calculationsHolder: CalculationsHolder) :
         val progressBar: ProgressBar = view.findViewById(R.id.progressBarCalculating)
     }
 
-    var onCalculationDeleteClickCallback : ((UUID) -> Unit)? = null
+    var onCalculationDeleteClickCallback: ((UUID) -> Unit)? = null
 
     override fun getItemCount(): Int = calculationsHolder.getCalculationsSize()
 
@@ -29,24 +29,41 @@ class CalculationsAdapter(var calculationsHolder: CalculationsHolder) :
         return CalculationViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: CalculationViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: CalculationViewHolder, position: Int) {
         val calculation = calculationsHolder.getCalculations()[position]
-        holder.textViewCalculation.text = calculation.number.toString()
-        holder.progressBar.visibility = if (calculation.isCalculating) View.VISIBLE else View.INVISIBLE
 
-        if (calculation.isCalculating) { // set the button image to 'cancel'
-            holder.buttonRemoveCalculation.setImageResource(R.drawable.ic_baseline_cancel_30)
-            holder.textViewCalculation.text = "Calculating roots for ${calculation.number}"
-        } else { // set the button image to 'delete'
-            holder.buttonRemoveCalculation.setImageResource(R.drawable.ic_baseline_delete_30)
-            holder.textViewCalculation.text = "Roots for ${calculation.number}:  ${calculation.root1}x${calculation.root2}"
-
+        // update the current progress of calculation
+        viewHolder.progressBar.progress = calculation.progress
+        val context = viewHolder.itemView.context
+        if (calculation.isCalculating) {
+            viewHolder.textViewCalculation.text = context.getString(
+                R.string.calculating_roots_for,
+                calculation.number
+            )  //"Calculating roots for ${calculation.number}"
+            // set the button image to 'cancel'
+            viewHolder.buttonRemoveCalculation.setImageResource(R.drawable.ic_baseline_cancel_30)
+            // update the current progress of calculation
+            viewHolder.progressBar.visibility = View.VISIBLE
+            viewHolder.progressBar.progress = calculation.progress
         }
-        holder.buttonRemoveCalculation.setOnClickListener{
+        else {
+            if (calculation.isNumberPrime) {
+                viewHolder.textViewCalculation.text = context.getString(R.string.number_is_prime, calculation.number)
+            }
+            else {
+                viewHolder.textViewCalculation.text = context.getString(R.string.roots_results, calculation.number, calculation.root1, calculation.root2)
+            }
+            // set the button image to 'delete'
+            viewHolder.buttonRemoveCalculation.setImageResource(R.drawable.ic_baseline_delete_30)
+            // hide progress bar
+            viewHolder.progressBar.visibility = View.INVISIBLE
+        }
+
+        viewHolder.buttonRemoveCalculation.setOnClickListener {
             calculationsHolder.deleteCalculation(calculation)
             notifyDataSetChanged()
-            val callback = onCalculationDeleteClickCallback?:return@setOnClickListener
-            callback(calculation.id)
+            val callback = onCalculationDeleteClickCallback ?: return@setOnClickListener
+            callback(calculation.id) // callback to MainActivity to remove the work from WorkManager's queue
         }
 
     }
