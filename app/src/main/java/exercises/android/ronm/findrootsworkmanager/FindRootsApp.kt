@@ -16,6 +16,6 @@ class FindRootsApp : Application() {
     override fun onCreate() {
         super.onCreate()
         sp = getSharedPreferences(SP_NAME_WORKERS, Context.MODE_PRIVATE)
-        sp.edit().clear().apply() // TODO for DEBUG
+//        sp.edit().clear().apply() // TODO for DEBUG
     }
 }

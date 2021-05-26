@@ -2,8 +2,6 @@ package exercises.android.ronm.findrootsworkmanager
 
 import android.content.Context
 
-
-import android.os.Handler
 import androidx.work.*
 import java.time.Duration
 import java.time.LocalDateTime
@@ -20,7 +18,6 @@ class CalculationWorker(appContext: Context, workerParameters: WorkerParameters)
 
     // immediately save number to output data so we can update progress outside properly
     private val outputBuilder = Data.Builder()
-
     init {
         outputBuilder.putLong(KEY_INPUT_NUMBER, number)
     }

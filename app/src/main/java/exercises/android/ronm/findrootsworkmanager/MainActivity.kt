@@ -24,13 +24,12 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
     private lateinit var recyclerView: RecyclerView
     private val workManager: WorkManager = WorkManager.getInstance(application)
 
-    private var outputWorkInfos: LiveData<List<WorkInfo>>
+    private val outputWorkInfos: LiveData<List<WorkInfo>> = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
 
-    init {
-        workManager.cancelAllWorkByTag(TAG_OUTPUT)  // TODO for debugging, clears the workers queue
-        workManager.pruneWork() // TODO for debugging, clears the workers queue from workers that are SUCCEEDED/FAILED/CANCELLED
-        outputWorkInfos = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
-    }
+//    init {
+//        workManager.cancelAllWorkByTag(TAG_OUTPUT)  // TODO for debugging, clears the workers queue
+//        workManager.pruneWork() // TODO for debugging, clears the workers queue from workers that are SUCCEEDED/FAILED/CANCELLED
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +43,7 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
         val adapter = CalculationsAdapter(appContext.calculationsHolder)
         recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView.adapter = adapter
+        // set adapater cancel/delete button callback
         adapter.onCalculationDeleteClickCallback = { id: UUID -> onCalculationDeleteClickCallback(id) }
 
 
@@ -55,11 +55,11 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
             adapter.notifyDataSetChanged()
         }
 
-
+        // set observer for all workers
         val workInfosObserver = Observer<List<WorkInfo>> { workInfosList ->
             workInfosList.forEach { workInfo ->
                 val id: UUID = workInfo.id
-                val number: Long = workInfo.outputData.getLong(KEY_INPUT_NUMBER, 1)
+                val number: Long = workInfo.outputData.getLong(KEY_INPUT_NUMBER, 1L)
                 when (workInfo.state) {
                     WorkInfo.State.SUCCEEDED -> {
                         val root1 = workInfo.outputData.getLong(KEY_RESULT_ROOT1, number)
@@ -79,14 +79,14 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
                         startCalculation(number, false)
                     }
                     else -> {
-                        // either CANCELED, ENQUEUED or BLOCKED, in OS's hands, do nothing and wait until they resume
-                        // if canceled, don't create/update a calculation class, skip over it
-                        // else ENQUEUED or BLOCKED, in OS's hands, do nothing and wait until they resume
+                        // either CANCELED, ENQUEUED or BLOCKED
+                        // if CANCELED, don't create/update a calculation class, skip over it
+                        // else ENQUEUED or BLOCKED, in OS's hands, do nothing and wait until they דאשרא
                     }
                 }
             }
         }
-        // set the observer to the live data
+        // make activity observe the changes during its lifecycle
         outputWorkInfos.observe(this, workInfosObserver)
     }
 
@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
 
     override fun onCalculationDeleteClickCallback(id: UUID) {
         workManager.cancelWorkById(id)
+        appContext.calculationsHolder.deleteCalculation(id)
     }
 
 
