@@ -26,10 +26,6 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
 
     private val outputWorkInfos: LiveData<List<WorkInfo>> = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
 
-//    init {
-//        workManager.cancelAllWorkByTag(TAG_OUTPUT)  // TODO for debugging, clears the workers queue
-//        workManager.pruneWork() // TODO for debugging, clears the workers queue from workers that are SUCCEEDED/FAILED/CANCELLED
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +36,10 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
 
         // init recycler view and adapter
         recyclerView = findViewById(R.id.recyclerCalculationsList)
-        val adapter = CalculationsAdapter(appContext.calculationsHolder)
+        val adapter = CalculationsAdapter(appContext.calculationsDatabase)
         recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView.adapter = adapter
-        // set adapater cancel/delete button callback
+        // set adapter cancel/delete button callback
         adapter.onCalculationDeleteClickCallback = { id: UUID -> onCalculationDeleteClickCallback(id) }
 
 
@@ -64,19 +60,18 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
                     WorkInfo.State.SUCCEEDED -> {
                         val root1 = workInfo.outputData.getLong(KEY_RESULT_ROOT1, number)
                         val root2 = workInfo.outputData.getLong(KEY_RESULT_ROOT2, 1L)
-                        appContext.calculationsHolder.updateCalculation(id, root1, root2, false)
+                        appContext.calculationsDatabase.updateCalculation(id, root1, root2, false)
                         adapter.notifyDataSetChanged()
                     }
                     WorkInfo.State.RUNNING -> {
                         val progress = workInfo.progress.getInt(CalculationWorker.PROGRESS, 0)
-                        appContext.calculationsHolder.updateCalculationProgress(id, progress)
+                        appContext.calculationsDatabase.updateCalculationProgress(id, progress)
                         adapter.notifyDataSetChanged()
                     }
                     WorkInfo.State.FAILED -> {
                         // if worker failed it is due to unexpected error as we do not return Result.failure() at all
-                        // cancel the failed worker to remove it from the queue and restart it, don't delete matching calculation object
-                        workManager.cancelWorkById(id)
-                        startCalculation(number, false)
+                        // restart the calculation
+                        startCalculation(number)
                     }
                     else -> {
                         // either CANCELED, ENQUEUED or BLOCKED
@@ -101,7 +96,7 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
             }
             // else a valid input number, start new calculation
             editTextInputNumber.setText("")
-            startCalculation(inputNumber, true)
+            startCalculation(inputNumber)
 
         } catch (e: Exception) {
             if (input != "") {
@@ -110,20 +105,17 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
         }
     }
 
-    private fun startCalculation(number: Long, isNew: Boolean) {
+    private fun startCalculation(number: Long) {
         val data = workDataOf(KEY_INPUT_NUMBER to number)
         val workRequest = OneTimeWorkRequestBuilder<CalculationWorker>().setInputData(data).addTag(TAG_OUTPUT).build()
-        if (isNew) {
-            // if new calculation and not from re-creating a worker due to failed state
-            appContext.calculationsHolder.addCalculation(workRequest.id, number)
-        }
+        appContext.calculationsDatabase.addCalculation(workRequest.id, number)
         workManager.enqueue(workRequest)
     }
 
 
     override fun onCalculationDeleteClickCallback(id: UUID) {
         workManager.cancelWorkById(id)
-        appContext.calculationsHolder.deleteCalculation(id)
+        appContext.calculationsDatabase.deleteCalculation(id)
     }
 
 

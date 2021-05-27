@@ -7,10 +7,9 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import exercises.android.ronm.findrootsworkmanager.models.CalculationsHolder
 import java.util.UUID
 
-class CalculationsAdapter(private val calculationsHolder: CalculationsHolder) :
+class CalculationsAdapter(private val calculationsDatabase: CalculationsDatabase) :
     RecyclerView.Adapter<CalculationsAdapter.CalculationViewHolder>() {
 
     class CalculationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -21,7 +20,7 @@ class CalculationsAdapter(private val calculationsHolder: CalculationsHolder) :
 
     var onCalculationDeleteClickCallback: ((UUID) -> Unit)? = null
 
-    override fun getItemCount(): Int = calculationsHolder.getCalculationsSize()
+    override fun getItemCount(): Int = calculationsDatabase.getCalculationsSize()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CalculationViewHolder {
         val context = parent.context
@@ -30,7 +29,7 @@ class CalculationsAdapter(private val calculationsHolder: CalculationsHolder) :
     }
 
     override fun onBindViewHolder(viewHolder: CalculationViewHolder, position: Int) {
-        val calculation = calculationsHolder.getCalculations()[position]
+        val calculation = calculationsDatabase.getCalculations()[position]
 
         // update the current progress of calculation
         viewHolder.progressBar.progress = calculation.progress

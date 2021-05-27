@@ -1,4 +1,4 @@
-package exercises.android.ronm.findrootsworkmanager.models
+package exercises.android.ronm.findrootsworkmanager
 
 import java.util.UUID
 
