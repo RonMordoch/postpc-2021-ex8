@@ -61,7 +61,6 @@ class CalculationsAdapter(private val calculationsDatabase: CalculationsDatabase
         viewHolder.buttonRemoveCalculation.setOnClickListener {
             val callback = onCalculationDeleteClickCallback ?: return@setOnClickListener
             callback(calculation.id) // callback to MainActivity to remove the work from WorkManager's queue and calculation from holder
-            notifyDataSetChanged()
         }
 
     }

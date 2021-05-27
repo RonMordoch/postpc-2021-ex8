@@ -2,6 +2,7 @@ package exercises.android.ronm.findrootsworkmanager
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -61,11 +62,13 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
                         val root1 = workInfo.outputData.getLong(KEY_RESULT_ROOT1, number)
                         val root2 = workInfo.outputData.getLong(KEY_RESULT_ROOT2, 1L)
                         appContext.calculationsDatabase.updateCalculation(id, root1, root2, false)
+                        appContext.saveDatabaseToSP()
                         adapter.notifyDataSetChanged()
                     }
                     WorkInfo.State.RUNNING -> {
                         val progress = workInfo.progress.getInt(CalculationWorker.PROGRESS, 0)
                         appContext.calculationsDatabase.updateCalculationProgress(id, progress)
+                        appContext.saveDatabaseToSP()
                         adapter.notifyDataSetChanged()
                     }
                     WorkInfo.State.FAILED -> {
@@ -109,6 +112,7 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
         val data = workDataOf(KEY_INPUT_NUMBER to number)
         val workRequest = OneTimeWorkRequestBuilder<CalculationWorker>().setInputData(data).addTag(TAG_OUTPUT).build()
         appContext.calculationsDatabase.addCalculation(workRequest.id, number)
+        appContext.saveDatabaseToSP()
         workManager.enqueue(workRequest)
     }
 
@@ -116,8 +120,25 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
     override fun onCalculationDeleteClickCallback(id: UUID) {
         workManager.cancelWorkById(id)
         appContext.calculationsDatabase.deleteCalculation(id)
+        appContext.saveDatabaseToSP()
+        recyclerView.adapter?.notifyDataSetChanged()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(BUNDLE_KEY_EDIT_TEXT, editTextInputNumber.text.toString())
+
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        editTextInputNumber.setText(savedInstanceState.getString(BUNDLE_KEY_EDIT_TEXT))
+    }
+
+
+    companion object{
+        private const val BUNDLE_KEY_EDIT_TEXT = "bundle_key_edit_text"
+    }
 
 }
 

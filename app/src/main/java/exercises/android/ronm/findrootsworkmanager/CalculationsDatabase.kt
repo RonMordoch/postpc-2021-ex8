@@ -4,7 +4,6 @@ import java.util.UUID
 
 class CalculationsDatabase {
 
-    private val calculationsList = mutableListOf<Calculation>()
     private val calculationsHashMap = mutableMapOf<UUID, Calculation>()
 
     // return a sorted copy of the values
@@ -19,7 +18,6 @@ class CalculationsDatabase {
     fun addCalculation(id: UUID, number: Long) {
         calculationsHashMap[id] = Calculation(id, number)
     }
-
 
     fun deleteCalculation(id: UUID) {
         calculationsHashMap.remove(id) // returns null if key is present in map, no exceptions thrown
