@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
     private lateinit var editTextInputNumber: EditText
     private lateinit var appContext: FindRootsApp
     private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewAdapter: CalculationsAdapter
     private val workManager: WorkManager = WorkManager.getInstance(application)
 
     private val outputWorkInfos: LiveData<List<WorkInfo>> = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
@@ -37,22 +38,30 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
 
         // init recycler view and adapter
         recyclerView = findViewById(R.id.recyclerCalculationsList)
-        val adapter = CalculationsAdapter(appContext.calculationsDatabase)
-        recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        recyclerView.adapter = adapter
-        // set adapter cancel/delete button callback
-        adapter.onCalculationDeleteClickCallback = { id: UUID -> onCalculationDeleteClickCallback(id) }
-
+        setRecyclerViewAdapter()
 
         // find views and set listeners
         editTextInputNumber = findViewById(R.id.editTextInputNumber)
         buttonStartCalculation = findViewById(R.id.buttonStartCalculation)
         buttonStartCalculation.setOnClickListener {
             fabStartCalculationClicked()
-            adapter.notifyDataSetChanged()
+            recyclerViewAdapter.notifyDataSetChanged()
         }
 
         // set observer for all workers
+        setWorkersObserver(recyclerViewAdapter)
+    }
+
+    private fun setRecyclerViewAdapter() {
+        recyclerViewAdapter = CalculationsAdapter(appContext.calculationsDatabase)
+        recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        recyclerView.adapter = recyclerViewAdapter
+        // set adapter cancel/delete button callback
+        recyclerViewAdapter.onCalculationDeleteClickCallback = { id: UUID -> onCalculationDeleteClickCallback(id) }
+    }
+
+
+    private fun setWorkersObserver(adapter: CalculationsAdapter) {
         val workInfosObserver = Observer<List<WorkInfo>> { workInfosList ->
             workInfosList.forEach { workInfo ->
                 val id: UUID = workInfo.id
@@ -136,7 +145,7 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
     }
 
 
-    companion object{
+    companion object {
         private const val BUNDLE_KEY_EDIT_TEXT = "bundle_key_edit_text"
     }
 
