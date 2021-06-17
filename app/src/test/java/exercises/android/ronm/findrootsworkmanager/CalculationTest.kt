@@ -1,5 +1,6 @@
 package exercises.android.ronm.findrootsworkmanager
 
+import exercises.android.ronm.findrootsworkmanager.models.Calculation
 import org.junit.Assert
 import org.junit.Test
 import java.util.*

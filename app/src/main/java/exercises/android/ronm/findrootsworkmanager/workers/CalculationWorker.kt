@@ -1,8 +1,9 @@
-package exercises.android.ronm.findrootsworkmanager
+package exercises.android.ronm.findrootsworkmanager.workers
 
 import android.content.Context
 
 import androidx.work.*
+import exercises.android.ronm.findrootsworkmanager.FindRootsApp
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId

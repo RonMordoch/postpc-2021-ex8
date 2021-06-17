@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import exercises.android.ronm.findrootsworkmanager.models.CalculationsDatabase
 
 const val SP_NAME_CALCULATIONS = "sp_calculations_workers"
 

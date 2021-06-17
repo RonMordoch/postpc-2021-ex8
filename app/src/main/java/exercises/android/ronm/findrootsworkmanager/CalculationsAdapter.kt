@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import exercises.android.ronm.findrootsworkmanager.models.CalculationsDatabase
 import java.util.UUID
 
 class CalculationsAdapter(private val calculationsDatabase: CalculationsDatabase) :
