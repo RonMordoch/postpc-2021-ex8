@@ -37,8 +37,11 @@ class CalculationWorker(appContext: Context, workerParameters: WorkerParameters)
 
             // calculate and save current progress to worker
             val progress: Int = (((i.toDouble() / number.toDouble()) * 100).toInt())
-            setProgress(workDataOf(PROGRESS to progress))
-
+            // show progress only every K steps, to avoid many ui-refreshes
+            // note this condition is optional and we can update it without the if-condition
+            if (progress % PROGRESS_STEPS == 0){
+                setProgress(workDataOf(PROGRESS to progress))
+            }
             // store the current progress every X amount of steps
             if (i % STEP_SIZE_TO_SAVE == 0L) {
                 sp.edit().putLong(number.toString(), i).apply()
@@ -75,6 +78,7 @@ class CalculationWorker(appContext: Context, workerParameters: WorkerParameters)
     companion object {
         private const val STEP_SIZE_TO_SAVE = 20000L
         private const val MAX_RUNNING_TIME_MINUTES = 8
+        private const val PROGRESS_STEPS = 2
         private const val DEFAULT_START = 2L
         const val PROGRESS = "Progress"
     }

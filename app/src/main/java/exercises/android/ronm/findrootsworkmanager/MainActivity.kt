@@ -127,10 +127,10 @@ class MainActivity : AppCompatActivity(), CalculationDeleteClickListener {
 
 
     override fun onCalculationDeleteClickCallback(id: UUID) {
-        workManager.cancelWorkById(id)
         appContext.calculationsDatabase.deleteCalculation(id)
-        appContext.saveDatabaseToSP()
         recyclerView.adapter?.notifyDataSetChanged()
+        workManager.cancelWorkById(id)
+        appContext.saveDatabaseToSP()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
