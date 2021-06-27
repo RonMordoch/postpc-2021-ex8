@@ -20,7 +20,7 @@ WorkManager takes care of resuming the workers after a few moments when the app 
 
 A short demo of the app working:
 
-<img src="demo_short_gif.gif" width="100%" height="100%">
+<img src="demo_short_gif.gif" width="50%" height="50%">
 
 
 ## Android components and libraries used
